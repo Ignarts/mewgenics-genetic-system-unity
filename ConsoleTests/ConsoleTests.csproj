@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>MewgenicsGenetics.ConsoleTests</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <!--
+    Include the domain layer directly from the Unity project.
+    No duplication — one source of truth.
+    The Unity-specific scripts (ScriptableObjects, MonoBehaviours) are excluded
+    because they reference UnityEngine which is not available in a console context.
+  -->
+  <ItemGroup>
+    <Compile Include="../Assets/Scripts/Domain/**/*.cs" />
+  </ItemGroup>
+
+</Project>
