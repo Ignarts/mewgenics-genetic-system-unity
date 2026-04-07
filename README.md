@@ -91,9 +91,3 @@ Available inspector settings:
 - **Engine-agnostic domain layer** — `Domain/` has zero Unity dependencies, which is why the console tests work without the engine.
 - **Deterministic testing via `IRng`** — inject `FixedRng` in tests to get reproducible results regardless of `UnityEngine.Random`.
 - **`BreedingLog` is opt-in** — pass `null` in production code to avoid allocations; pass a `BreedingLog` instance when debugging.
-
----
-
-## Author
-
-**Ignacio Meléndez** — [ignarts.dev](https://www.ignarts.dev)
