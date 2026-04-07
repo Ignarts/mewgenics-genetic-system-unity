@@ -179,7 +179,9 @@ static void PrintCat(string label, CatGenome genome)
     var p = CatStatResolver.Resolve(genome);
 
     Console.WriteLine($"[{label}]  Gen:{genome.generation}");
+    Console.ForegroundColor = CatAsciiRenderer.CoatColor(genome);
     Console.WriteLine(CatAsciiRenderer.Render(genome, p));
+    Console.ResetColor();
     Console.WriteLine($"  HP:{p.maxHp}  ATK:{p.attack}  SPD:{p.speed}  Scale:{p.sizeScale:F2}");
     Console.WriteLine($"  Vitality:{genome.vitality}  Agility:{genome.agility}  Aggression:{genome.aggression}");
     Console.WriteLine($"  BodySize:{genome.bodySize}  CoatColor:{genome.coatColor}");

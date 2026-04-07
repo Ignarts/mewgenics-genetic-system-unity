@@ -11,6 +11,7 @@ namespace MewgenicsGenetics.Domain
     ///   Eyes   → aggression  (sleepy / calm / alert / fierce)
     ///   Mouth  → vitality    (frail / normal / robust)
     ///   Body   → bodySize    (small / medium / large)
+    ///   Color  → coatColor   (use CoatColor() to get the ConsoleColor)
     ///   Extras → expressed traits and mutations
     /// </summary>
     public static class CatAsciiRenderer
@@ -19,18 +20,16 @@ namespace MewgenicsGenetics.Domain
         {
             phenotype ??= CatStatResolver.Resolve(genome);
 
-            string earTip  = EarTip(genome.agility);
-            string eye     = Eye(genome.aggression);
-            string mouth   = Mouth(genome.vitality);
-            string body    = Body(genome.bodySize);
-            string coat    = CoatLabel(genome.coatColor);
-            string extras  = Extras(phenotype);
+            string earTip = EarTip(genome.agility);
+            string eye    = Eye(genome.aggression);
+            string mouth  = Mouth(genome.vitality);
+            string body   = Body(genome.bodySize);
+            string extras = Extras(phenotype);
 
-            // Fixed-width layout so cats align when printed in a row
             var sb = new StringBuilder();
             sb.AppendLine($"  {earTip}  {earTip}  ");
             sb.AppendLine($" < {eye}   {eye} > ");
-            sb.AppendLine($" (  {mouth}  )  {coat}");
+            sb.AppendLine($" (  {mouth}  )");
             sb.AppendLine($"  `{body}`  ");
             if (extras.Length > 0)
                 sb.AppendLine($"  [{extras}]");
@@ -38,8 +37,23 @@ namespace MewgenicsGenetics.Domain
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Returns the ConsoleColor that corresponds to this cat's coat gene.
+        /// Call this before printing the art to set Console.ForegroundColor.
+        /// </summary>
+        public static ConsoleColor CoatColor(CatGenome genome) =>
+            AlleleMath.SumPair(genome.coatColor, 0, 14) switch
+            {
+                <= 2  => ConsoleColor.White,       // white
+                <= 4  => ConsoleColor.Yellow,      // cream
+                <= 6  => ConsoleColor.DarkYellow,  // tabby
+                <= 8  => ConsoleColor.Cyan,        // calico
+                <= 10 => ConsoleColor.Gray,        // tuxedo
+                <= 12 => ConsoleColor.Red,         // tortie
+                _     => ConsoleColor.Magenta,     // void
+            };
+
         // ── Ears ─────────────────────────────────────────────────────────────
-        // Low agility → droopy ears. High agility → sharp, alert ears.
         private static string EarTip(GenePair agility) =>
             AlleleMath.SumPair(agility, 0, 8) switch
             {
@@ -50,7 +64,6 @@ namespace MewgenicsGenetics.Domain
             };
 
         // ── Eyes ─────────────────────────────────────────────────────────────
-        // Low aggression → sleepy/calm. High aggression → fierce.
         private static string Eye(GenePair aggression) =>
             AlleleMath.SumPair(aggression, 0, 8) switch
             {
@@ -62,7 +75,6 @@ namespace MewgenicsGenetics.Domain
             };
 
         // ── Mouth ────────────────────────────────────────────────────────────
-        // Low vitality → frail. High vitality → strong/robust.
         private static string Mouth(GenePair vitality) =>
             AlleleMath.SumPair(vitality, 0, 8) switch
             {
@@ -73,52 +85,33 @@ namespace MewgenicsGenetics.Domain
             };
 
         // ── Body / tail ──────────────────────────────────────────────────────
-        // bodySize average maps to tail length — bigger cat, longer tail.
         private static string Body(GenePair bodySize) =>
             AlleleMath.AveragePair(bodySize) switch
             {
-                < 1f  => "-vv-",       // tiny
-                < 2f  => "-vvvv-",     // small
-                < 3f  => "-vvvvvv-",   // medium
-                _     => "-vvvvvvvv-", // large
+                < 1f => "-vv-",
+                < 2f => "-vvvv-",
+                < 3f => "-vvvvvv-",
+                _    => "-vvvvvvvv-",
             };
 
-        // ── Coat label ───────────────────────────────────────────────────────
-        // Maps the coatColor pair to a named pattern so designers can read it.
-        private static string CoatLabel(GenePair coat)
-        {
-            int sum = AlleleMath.SumPair(coat, 0, 14);
-            return sum switch
-            {
-                <= 2  => "white",
-                <= 4  => "cream",
-                <= 6  => "tabby",
-                <= 8  => "calico",
-                <= 10 => "tuxedo",
-                <= 12 => "tortie",
-                _     => "void",
-            };
-        }
-
-        // ── Extras ───────────────────────────────────────────────────────────
-        // Expressed traits and mutations appear as compact tags.
+        // ── Expressed traits and mutations ───────────────────────────────────
         private static string Extras(CatPhenotype phenotype)
         {
             if (phenotype.expressedTraits.Count == 0) return string.Empty;
 
             var tags = phenotype.expressedTraits.ConvertAll(t => t switch
             {
-                "iron_hide"     => "🛡",
-                "speed_burst"   => "⚡",
-                "berserker"     => "🔥",
-                "swift_feet"    => "💨",
-                "giant_paws"    => "🐾",
-                "hollow_bones"  => "🦴",
-                "extra_tail"    => "〜",
-                "vibrant_coat"  => "✦",
-                "feral_instinct"=> "☠",
-                "night_vision"  => "🌙",
-                _               => t,
+                "iron_hide"      => "🛡",
+                "speed_burst"    => "⚡",
+                "berserker"      => "🔥",
+                "swift_feet"     => "💨",
+                "giant_paws"     => "🐾",
+                "hollow_bones"   => "🦴",
+                "extra_tail"     => "〜",
+                "vibrant_coat"   => "✦",
+                "feral_instinct" => "☠",
+                "night_vision"   => "🌙",
+                _                => t,
             });
 
             return string.Join(" ", tags);
