@@ -177,8 +177,10 @@ static void RunRecessiveTraitDemo(IRng rng)
 static void PrintCat(string label, CatGenome genome)
 {
     var p = CatStatResolver.Resolve(genome);
+
     Console.WriteLine($"[{label}]  Gen:{genome.generation}");
-    Console.WriteLine($"  {p}");
+    Console.WriteLine(CatAsciiRenderer.Render(genome, p));
+    Console.WriteLine($"  HP:{p.maxHp}  ATK:{p.attack}  SPD:{p.speed}  Scale:{p.sizeScale:F2}");
     Console.WriteLine($"  Vitality:{genome.vitality}  Agility:{genome.agility}  Aggression:{genome.aggression}");
     Console.WriteLine($"  BodySize:{genome.bodySize}  CoatColor:{genome.coatColor}");
     if (genome.mutations.Count > 0)
