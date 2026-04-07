@@ -39,21 +39,19 @@ cd ConsoleTests
 dotnet run
 ```
 
-The test runner executes all unit tests and then prints a 4-generation lineage demo with the full breeding log so you can trace every allele inheritance and mutation event.
+Each run uses a different random seed, so results vary every time. The seed is printed at the top — pass it as an argument to reproduce an exact run:
 
-Expected output:
+```bash
+dotnet run -- 183741   # reproduce a specific run
 ```
-╔══════════════════════════════════════════╗
-║   Mewgenics Genetics — Console Test Run  ║
-╚══════════════════════════════════════════╝
 
-=== BreedingServiceTests ===
-  [PASS] ChildGenerationIsParentPlusOne
-  [PASS] ChildAllelesComefromParents
-  ...
+After the unit tests pass, three interactive demos run automatically:
 
-  Results: 3 passed, 0 failed
-```
+| Demo | What it shows |
+|---|---|
+| **1 · 6-Generation Lineage** | The same parent pair bred 6 times. Stats drift and traits accumulate across generations. Full breeding log included. |
+| **2 · Mutation Frequency** | 30 random cats bred in a loop. Shows which mutations triggered and how often. |
+| **3 · Recessive Trait Expression** | Two parents carrying `iron_hide` (recessive). Breeds up to 20 offspring and highlights the first one where the trait expresses. |
 
 ---
 
