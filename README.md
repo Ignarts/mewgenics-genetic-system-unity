@@ -14,14 +14,14 @@ Assets/Scripts/
 ├── Domain/               # Pure C# — no Unity dependency
 │   ├── Core/             # CatGenome, CatPhenotype, GenePair, MutationGene, TraitGene
 │   ├── Services/         # BreedingService, CatStatResolver, GenomeRules
-│   └── Utils/            # AlleleMath, BreedingLog, IRng
+│   └── Utils/            # AlleleMath, BreedingLog, IRng, CatAsciiRenderer
 ├── Unity/
 │   └── ScriptableObjects/  # GeneDefinition, AlleleDefinition
 └── Demo/
     └── GeneticsDemo.cs   # MonoBehaviour demo — attach and press Play
 
 ConsoleTests/             # .NET 8 console app — runs without Unity
-├── Program.cs            # Test runner + integration demo
+├── Program.cs            # Test runner + integration demos
 └── Tests/
     ├── BreedingServiceTests.cs
     ├── CatStatResolverTests.cs
@@ -52,6 +52,26 @@ After the unit tests pass, three interactive demos run automatically:
 | **1 · 6-Generation Lineage** | The same parent pair bred 6 times. Stats drift and traits accumulate across generations. Full breeding log included. |
 | **2 · Mutation Frequency** | 30 random cats bred in a loop. Shows which mutations triggered and how often. |
 | **3 · Recessive Trait Expression** | Two parents carrying `iron_hide` (recessive). Breeds up to 20 offspring and highlights the first one where the trait expresses. |
+
+Each cat is printed as ASCII art with its color derived from the `coatColor` gene:
+
+```
+[Parent A]  Gen:0
+
+  /^\  /^\
+ < @   @ >
+ (  ~~  )
+  `-vvvv-`
+```
+
+| Element | Gene | Variation |
+|---|---|---|
+| Ears | `agility` | `/-\` droopy · `/^\` normal · `/*\` sharp · `/!\` hyper |
+| Eyes | `aggression` | `-` sleepy · `o` calm · `@` alert · `*` fierce · `>` feral |
+| Mouth | `vitality` | `._` frail · `~~` normal · `==` robust · `##` tank |
+| Body | `bodySize` | `-vv-` tiny → `-vvvvvvvv-` large |
+| Color | `coatColor` | White · Yellow · DarkYellow · Cyan · Gray · Red · Magenta |
+| Extras | traits + mutations | emoji tag per expressed trait |
 
 ---
 
@@ -89,3 +109,4 @@ Available inspector settings:
 - **Engine-agnostic domain layer** — `Domain/` has zero Unity dependencies, which is why the console tests work without the engine.
 - **Deterministic testing via `IRng`** — inject `FixedRng` in tests to get reproducible results regardless of `UnityEngine.Random`.
 - **`BreedingLog` is opt-in** — pass `null` in production code to avoid allocations; pass a `BreedingLog` instance when debugging.
+- **`CatAsciiRenderer` separates art from color** — `Render()` returns the string; `CoatColor()` returns a `ConsoleColor`. The domain layer never touches the console directly, so the same renderer can be adapted to Unity's color system without changing the domain.
